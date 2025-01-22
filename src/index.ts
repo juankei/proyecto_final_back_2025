@@ -194,11 +194,11 @@ app.get('/score', async (req, res) => {
 });
 
 
-app.get('/answers/:id', async (req, res) => {
+app.get('/answers/:id_ans', async (req, res) => {
     console.log('Petición recibida al endpoint GET /answers');
     try {
         let db_response = await db.query(`SELECT preguntas.id AS pregunta_id,respuestas.respuesta_correcta, respuestas.opcion_1, respuestas.opcion_2, respuestas.opcion_3
-       FROM preguntas INNER JOIN  respuestas ON preguntas.id = respuestas.pregunta_id  WHERE id ${req.params.id}  ` );
+       FROM preguntas INNER JOIN  respuestas ON preguntas.id = respuestas.pregunta_id  WHERE pregunta_id = ${req.params.id_ans}`);
         console.log(db_response);
         res.json(db_response.rows);
     } catch (err){

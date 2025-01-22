@@ -338,7 +338,7 @@ app.get('/score', function (req, res) { return __awaiter(void 0, void 0, void 0,
         }
     });
 }); });
-app.get('/answers/:id', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+app.get('/answers/:id_ans', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var db_response, err_10;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -347,7 +347,7 @@ app.get('/answers/:id', function (req, res) { return __awaiter(void 0, void 0, v
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, db.query("SELECT preguntas.id AS pregunta_id,respuestas.respuesta_correcta, respuestas.opcion_1, respuestas.opcion_2, respuestas.opcion_3\n       FROM preguntas INNER JOIN  respuestas ON preguntas.id = respuestas.pregunta_id  WHERE id " + req.params.id + "  ")];
+                return [4 /*yield*/, db.query("SELECT preguntas.id AS pregunta_id,respuestas.respuesta_correcta, respuestas.opcion_1, respuestas.opcion_2, respuestas.opcion_3\n       FROM preguntas INNER JOIN  respuestas ON preguntas.id = respuestas.pregunta_id  WHERE pregunta_id = " + req.params.id_ans)];
             case 2:
                 db_response = _a.sent();
                 console.log(db_response);
