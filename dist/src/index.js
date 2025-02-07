@@ -213,30 +213,34 @@ app.get('/user/:email', function (req, res) { return __awaiter(void 0, void 0, v
     });
 }); });
 app.post('/adduser', jsonParser, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var query, query_respuestas, db_response, err_5;
+    var checkQuery, checkResult, query, db_response, err_5;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 console.log("Petici\u00F3n recibida al endpoint POST /adduser. \n        Body:" + JSON.stringify(req.body));
                 _a.label = 1;
             case 1:
-                _a.trys.push([1, 3, , 4]);
+                _a.trys.push([1, 4, , 5]);
+                checkQuery = "SELECT * FROM usuarios WHERE id = '" + req.body.id + "' ;";
+                return [4 /*yield*/, db.query(checkQuery)];
+            case 2:
+                checkResult = _a.sent();
+                if (checkResult.rows.length > 0) {
+                    console.log("el usuario ya existe");
+                }
                 query = "INSERT INTO usuarios (id,nombre_usuario) VALUES ('" + req.body.id + "','" + req.body.nombre_usuario + "');";
                 console.log(query);
-                query_respuestas = "INSERT INTO respuestas_usuario (usuario_id) VALUES ('" + req.body.id + "');";
-                console.log(query_respuestas);
-                return [4 /*yield*/, db.query(query_respuestas)];
-            case 2:
-                db_response = _a.sent();
-                console.log(db_response.rows);
-                res.json("Registro guardado correctamente.");
-                return [3 /*break*/, 4];
+                return [4 /*yield*/, db.query(query)];
             case 3:
+                db_response = _a.sent();
+                res.json("Registro guardado correctamente.");
+                return [3 /*break*/, 5];
+            case 4:
                 err_5 = _a.sent();
                 console.error(err_5);
                 res.status(500).send('Internal Server Error');
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
+                return [3 /*break*/, 5];
+            case 5: return [2 /*return*/];
         }
     });
 }); });
@@ -249,7 +253,7 @@ app.post('/addusername', jsonParser, function (req, res) { return __awaiter(void
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                query = "UPDATE usuarios SET username = '" + req.body.username + "' WHERE id= '" + req.body.id + "';";
+                query = "UPDATE usuarios SET username = '" + req.body.username + "' WHERE id = '" + req.body.id + "';";
                 console.log(query);
                 return [4 /*yield*/, db.query(query)];
             case 2:
@@ -291,51 +295,64 @@ app.get('/showusername/:email', function (req, res) { return __awaiter(void 0, v
     });
 }); });
 app.post('/addScore', jsonParser, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var db_data, query, db_response, err_8;
+    var checkQuery2, checkResult2, db_data, query, db_response, query_respuestas, db_res, err_8;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 console.log("Petici\u00F3n recibida al endpoint POST /addscore. \n        Body:" + JSON.stringify(req.body));
                 _a.label = 1;
             case 1:
-                _a.trys.push([1, 5, , 6]);
-                return [4 /*yield*/, db.query("SELECT * FROM respuestas_usuario WHERE usuario_id = '" + req.body.id + "'")];
+                _a.trys.push([1, 8, , 9]);
+                checkQuery2 = "SELECT * FROM respuestas_usuario WHERE usuario_id  = '" + req.body.id + "' ;";
+                return [4 /*yield*/, db.query(checkQuery2)];
             case 2:
+                checkResult2 = _a.sent();
+                return [4 /*yield*/, db.query("SELECT * FROM respuestas_usuario WHERE usuario_id = '" + req.body.id + "'")];
+            case 3:
                 db_data = _a.sent();
                 console.log(db_data);
-                if (!(db_data.rows.length > 0)) return [3 /*break*/, 4];
+                if (!(db_data.rows.length > 0 && checkResult2.rows.length > 0)) return [3 /*break*/, 5];
                 query = "UPDATE respuestas_usuario SET puntos = " + req.body.score + " WHERE usuario_id = '" + req.body.id + "';";
                 console.log(query);
                 return [4 /*yield*/, db.query(query)];
-            case 3:
+            case 4:
                 db_response = _a.sent();
                 res.json("el usuario " + req.body.id + " se le ha actualizado la puntuacion");
                 console.log(db_response.rows);
-                _a.label = 4;
-            case 4:
-                console.log('\x1b[33m%s\x1b[0m', 'usuario no encontrado');
-                return [3 /*break*/, 6];
+                return [3 /*break*/, 7];
             case 5:
+                query_respuestas = "INSERT INTO respuestas_usuario (usuario_id,puntos) VALUES ('" + req.body.id + "', " + req.body.score + ");";
+                console.log(query_respuestas);
+                return [4 /*yield*/, db.query(query_respuestas)];
+            case 6:
+                db_res = _a.sent();
+                console.log(db_res.rows);
+                _a.label = 7;
+            case 7:
+                console.log('\x1b[33m%s\x1b[0m', 'usuario no encontrado');
+                return [3 /*break*/, 9];
+            case 8:
                 err_8 = _a.sent();
                 console.error(err_8);
                 res.status(500).send('Internal Server Error');
-                return [3 /*break*/, 6];
-            case 6: return [2 /*return*/];
+                return [3 /*break*/, 9];
+            case 9: return [2 /*return*/];
         }
     });
 }); });
-app.get('/score', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+app.get('/score/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var db_response, err_9;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                console.log('Petición recibida al endpoint GET /pregunta');
+                console.log('Petición recibida al endpoint GET /score');
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, db.query("SELECT * FROM respuestas_usuario WHERE usuario_id = ''   ")];
+                return [4 /*yield*/, db.query("SELECT * FROM respuestas_usuario   ")];
             case 2:
                 db_response = _a.sent();
+                console.log(req.params.user);
                 console.log(db_response);
                 res.json(db_response.rows);
                 return [3 /*break*/, 4];

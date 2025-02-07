@@ -125,12 +125,22 @@ app.post('/adduser', jsonParser, async (req, res) => {
     console.log(`Petición recibida al endpoint POST /adduser. 
         Body:${JSON.stringify(req.body)}`);
     try {
+
+
+        let checkQuery = `SELECT * FROM usuarios WHERE id = '${req.body.id}' ;`;
+        let checkResult = await db.query(checkQuery);
+
+
+        if (checkResult.rows.length > 0) {
+         console.log(`el usuario ya existe`)
+        }
+
         let query = `INSERT INTO usuarios (id,nombre_usuario) VALUES ('${req.body.id}','${req.body.nombre_usuario}');`
         console.log(query);
-        let query_respuestas = `INSERT INTO respuestas_usuario (usuario_id) VALUES ('${req.body.id}');`
-        console.log(query_respuestas);
-        let db_response = await db.query(query_respuestas);
-        console.log(db_response.rows);
+        let db_response = await db.query(query);
+
+        
+   
         res.json("Registro guardado correctamente.");
     } catch (err) {
         console.error(err);
@@ -144,9 +154,7 @@ app.post('/addusername', jsonParser, async (req, res) => {
         Body:${JSON.stringify(req.body)}`);
     try {
 
-
-        
-        let query = `UPDATE usuarios SET username = '${req.body.username}' WHERE id= '${req.body.id}';`
+        let query = `UPDATE usuarios SET username = '${req.body.username}' WHERE id = '${req.body.id}';`
         console.log(query);
         let db_response = await db.query(query);
         console.log(db_response.rows);
@@ -178,12 +186,16 @@ app.post('/addScore', jsonParser, async (req, res) => {
     try {
 
 
+        
+        let checkQuery2 = `SELECT * FROM respuestas_usuario WHERE usuario_id  = '${req.body.id}' ;`;
+        let checkResult2 = await db.query(checkQuery2);
+        
+
         let db_data = await db.query(`SELECT * FROM respuestas_usuario WHERE usuario_id = '${req.body.id}'` );
         console.log(db_data)
         //console.log (db_response)
-        if (db_data.rows.length > 0 ){
-           
-            
+        if (db_data.rows.length > 0  && checkResult2.rows.length > 0  ){
+                   
             let query = `UPDATE respuestas_usuario SET puntos = ${req.body.score} WHERE usuario_id = '${req.body.id}';`
             console.log(query);
             let db_response = await db.query(query);
@@ -195,7 +207,14 @@ app.post('/addScore', jsonParser, async (req, res) => {
         console.log(db_response.rows);
 
 
-        } 
+        } else { let query_respuestas = `INSERT INTO respuestas_usuario (usuario_id,puntos) VALUES ('${req.body.id}', ${req.body.score});`
+        console.log(query_respuestas);
+        let db_res = await db.query(query_respuestas);
+        
+        console.log (db_res.rows)
+        }
+
+        
             console.log ('\x1b[33m%s\x1b[0m','usuario no encontrado')
 
             
@@ -209,10 +228,11 @@ app.post('/addScore', jsonParser, async (req, res) => {
 });
 
 
-app.get('/score', async (req, res) => {
-    console.log('Petición recibida al endpoint GET /pregunta');
+app.get('/score/', async (req, res) => {
+    console.log('Petición recibida al endpoint GET /score');
     try {
-        let db_response = await db.query(`SELECT * FROM respuestas_usuario WHERE usuario_id = ''   ` );
+        let db_response = await db.query(`SELECT * FROM respuestas_usuario   ` );
+        console.log(req.params.user)
         console.log(db_response);
         res.json(db_response.rows);
     } catch (err){
