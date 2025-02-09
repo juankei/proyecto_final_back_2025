@@ -256,6 +256,19 @@ app.get('/answers/:id_ans', async (req, res) => {
 });
 
 
+app.get('/allUsers', async (req, res) => {
+    console.log('Petición recibida al endpoint GET /answers');
+    try {
+        let db_response = await db.query(`SELECT * FROM respuestas_usuario`);
+        console.log(db_response);
+        res.json(db_response.rows);
+    } catch (err){
+        console.error(err);
+        res.status(500).send('Internal Server Error'); 
+    }
+});
+
+
 
 const port = process.env.PORT || 3000;
 

@@ -389,6 +389,30 @@ app.get('/answers/:id_ans', function (req, res) { return __awaiter(void 0, void 
         }
     });
 }); });
+app.get('/allUsers', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var db_response, err_11;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                console.log('Petición recibida al endpoint GET /answers');
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, db.query("SELECT * FROM respuestas_usuario")];
+            case 2:
+                db_response = _a.sent();
+                console.log(db_response);
+                res.json(db_response.rows);
+                return [3 /*break*/, 4];
+            case 3:
+                err_11 = _a.sent();
+                console.error(err_11);
+                res.status(500).send('Internal Server Error');
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
 var port = process.env.PORT || 3000;
 app.listen(port, function () {
     return console.log("App listening on PORT " + port + ".\n\n    ENDPOINT:\n     - GET  /pregunta\n     - GET  /pregunta1\n     - GET  /user/:email\n     - POST /adduser\n     - POST /addusername\n     - GET  /showusername\n    ");
