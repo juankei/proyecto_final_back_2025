@@ -349,7 +349,7 @@ app.get('/score/', function (req, res) { return __awaiter(void 0, void 0, void 0
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, db.query("SELECT * FROM respuestas_usuario   ")];
+                return [4 /*yield*/, db.query("SELECT * FROM respuestas_usuario ")];
             case 2:
                 db_response = _a.sent();
                 console.log(req.params.user);
@@ -410,6 +410,68 @@ app.get('/allUsers', function (req, res) { return __awaiter(void 0, void 0, void
                 res.status(500).send('Internal Server Error');
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
+        }
+    });
+}); });
+app.get('/Score/:id', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var db_response, err_12;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                console.log('Petición recibida al endpoint GET /Score kkkkk');
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, db.query("SELECT * FROM respuestas_usuario WHERE usuario_id = '" + req.params.id + "'  ")];
+            case 2:
+                db_response = _a.sent();
+                console.log(db_response);
+                res.json(db_response.rows);
+                return [3 /*break*/, 4];
+            case 3:
+                err_12 = _a.sent();
+                console.error(err_12);
+                res.status(500).send('Internal Server Error');
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+app.post('/substractPoints', jsonParser, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var checkQuery2, checkResult2, db_data, query, db_response, err_13;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                console.log("Petici\u00F3n recibida al endpoint POST /addscore. \n        Body:" + JSON.stringify(req.body));
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 6, , 7]);
+                checkQuery2 = "SELECT * FROM respuestas_usuario WHERE usuario_id  = '" + req.body.id + "' ;";
+                return [4 /*yield*/, db.query(checkQuery2)];
+            case 2:
+                checkResult2 = _a.sent();
+                return [4 /*yield*/, db.query("SELECT * FROM respuestas_usuario WHERE usuario_id = '" + req.body.id + "'")];
+            case 3:
+                db_data = _a.sent();
+                console.log(db_data);
+                if (!(db_data.rows.length > 0 && checkResult2.rows.length > 0)) return [3 /*break*/, 5];
+                query = "UPDATE respuestas_usuario SET puntos = 0 WHERE usuario_id = '" + req.body.id + "';";
+                console.log(query);
+                return [4 /*yield*/, db.query(query)];
+            case 4:
+                db_response = _a.sent();
+                res.json("el usuario " + req.body.id + " se le ha actualizado la puntuacion");
+                console.log(db_response.rows);
+                _a.label = 5;
+            case 5:
+                console.log('\x1b[33m%s\x1b[0m', 'usuario no encontrado');
+                return [3 /*break*/, 7];
+            case 6:
+                err_13 = _a.sent();
+                console.error(err_13);
+                res.status(500).send('Internal Server Error');
+                return [3 /*break*/, 7];
+            case 7: return [2 /*return*/];
         }
     });
 }); });

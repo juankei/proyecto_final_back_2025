@@ -231,7 +231,7 @@ app.post('/addScore', jsonParser, async (req, res) => {
 app.get('/score/', async (req, res) => {
     console.log('Petición recibida al endpoint GET /score');
     try {
-        let db_response = await db.query(`SELECT * FROM respuestas_usuario   ` );
+        let db_response = await db.query(`SELECT * FROM respuestas_usuario ` );
         console.log(req.params.user)
         console.log(db_response);
         res.json(db_response.rows);
@@ -267,6 +267,62 @@ app.get('/allUsers', async (req, res) => {
         res.status(500).send('Internal Server Error'); 
     }
 });
+
+
+app.get('/Score/:id', async (req, res) => {
+    console.log('Petición recibida al endpoint GET /Score kkkkk');
+    try {
+        let db_response = await db.query(`SELECT * FROM respuestas_usuario WHERE usuario_id = '${req.params.id}'  `);
+        console.log(db_response);
+        res.json(db_response.rows);
+    } catch (err){
+        console.error(err);
+        res.status(500).send('Internal Server Error'); 
+    }
+});
+
+
+app.post('/substractPoints', jsonParser, async (req, res) => {
+    console.log(`Petición recibida al endpoint POST /addscore. 
+        Body:${JSON.stringify(req.body)}`);
+    try {
+
+
+        
+        let checkQuery2 = `SELECT * FROM respuestas_usuario WHERE usuario_id  = '${req.body.id}' ;`;
+        let checkResult2 = await db.query(checkQuery2);
+        
+
+        let db_data = await db.query(`SELECT * FROM respuestas_usuario WHERE usuario_id = '${req.body.id}'` );
+        console.log(db_data)
+        //console.log (db_response)
+        if (db_data.rows.length > 0  && checkResult2.rows.length > 0  ){
+                   
+            let query = `UPDATE respuestas_usuario SET puntos = 0 WHERE usuario_id = '${req.body.id}';`
+            console.log(query);
+            let db_response = await db.query(query);
+            
+            
+            res.json(`el usuario ${req.body.id} se le ha actualizado la puntuacion` )
+
+        
+        console.log(db_response.rows);
+
+
+        }
+
+        console.log ('\x1b[33m%s\x1b[0m','usuario no encontrado')
+
+            
+      
+            
+           
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 
 
 
