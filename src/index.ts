@@ -269,60 +269,56 @@ app.get('/allUsers', async (req, res) => {
 });
 
 
-app.get('/Score/:id', async (req, res) => {
-    console.log('Petición recibida al endpoint GET /Score kkkkk');
-    try {
-        let db_response = await db.query(`SELECT * FROM respuestas_usuario WHERE usuario_id = '${req.params.id}'  `);
-        console.log(db_response);
-        res.json(db_response.rows);
-    } catch (err){
-        console.error(err);
-        res.status(500).send('Internal Server Error'); 
-    }
-});
+
 
 
 app.post('/substractPoints', jsonParser, async (req, res) => {
-    console.log(`Petición recibida al endpoint POST /addscore. 
-        Body:${JSON.stringify(req.body)}`);
+    console.log(`Petición recibida al endpoint POST /substractPoints. 
+      Body:${JSON.stringify(req.body)}`);
+    
     try {
-
-
-        
-        let checkQuery2 = `SELECT * FROM respuestas_usuario WHERE usuario_id  = '${req.body.id}' ;`;
-        let checkResult2 = await db.query(checkQuery2);
-        
-
-        let db_data = await db.query(`SELECT * FROM respuestas_usuario WHERE usuario_id = '${req.body.id}'` );
-        console.log(db_data)
-        //console.log (db_response)
-        if (db_data.rows.length > 0  && checkResult2.rows.length > 0  ){
-                   
-            let query = `UPDATE respuestas_usuario SET puntos = 0 WHERE usuario_id = '${req.body.id}';`
-            console.log(query);
-            let db_response = await db.query(query);
-            
-            
-            res.json(`el usuario ${req.body.id} se le ha actualizado la puntuacion` )
-
-        
-        console.log(db_response.rows);
-
-
-        }
-
-        console.log ('\x1b[33m%s\x1b[0m','usuario no encontrado')
-
-            
+      // Verificar si el usuario existe
+      let checkQuery2 = `SELECT * FROM respuestas_usuario WHERE usuario_id  = '${req.body.id}' ;`;
+      let checkResult2 = await db.query(checkQuery2);
       
-            
-           
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Internal Server Error');
-    }
-});
+      if (checkResult2.rows.length === 0) {
+        console.log('\x1b[33m%s\x1b[0m', 'Usuario no encontrado');
+        return res.status(404).json({ message: 'Usuario no encontrado' });
+      }
+      console.log(checkResult2)
+       let puntos_actualizados = checkResult2.rows[0].puntos - Number(10)
 
+      // Actualizar los puntos a 0 y obtener los datos con RETURNING
+      let updateQuery = `UPDATE respuestas_usuario SET puntos = ${puntos_actualizados} WHERE usuario_id = '${req.body.id}' RETURNING *;`;
+      let dbResponse = await db.query(updateQuery);
+      
+      // Verificar si la consulta de actualización fue exitosa
+      if (dbResponse.rows.length > 0) {
+        // Aquí están los datos del usuario actualizado
+        const updatedUser = dbResponse.rows[0];  // Datos de la fila actualizada
+        
+        let today = new Date();
+        let fecha = today.toLocaleDateString();  // Ejemplo: "2/11/2025"
+        
+
+        let query_usario = `INSERT INTO poder_eliminar (usuario_destino,usuario_origen,fecha,puntos_restados) VALUES ('${req.body.id_origen}','${req.body.id}','${fecha}',10);`
+        console.log(query_usario);
+        let db_res = await db.query(query_usario);
+
+        // Enviar los datos actualizados en la respuesta
+        return res.json({
+          message: `Se ha eliminado la puntuación del usuario ${req.body.id}`,
+          updatedUser: updatedUser  // Aquí devolvemos los datos actualizados
+        });
+      } else {
+        // Si no se pudo actualizar por alguna razón
+        return res.status(400).json({ message: 'No se pudo actualizar la puntuación' });
+      }
+    } catch (error) {
+      console.error('Error al procesar la petición:', error);
+      return res.status(500).json({ message: 'Error en el servidor' });
+    }
+  });
 
 
 

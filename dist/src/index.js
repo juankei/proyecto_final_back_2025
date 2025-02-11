@@ -413,65 +413,52 @@ app.get('/allUsers', function (req, res) { return __awaiter(void 0, void 0, void
         }
     });
 }); });
-app.get('/Score/:id', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var db_response, err_12;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                console.log('Petición recibida al endpoint GET /Score kkkkk');
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, db.query("SELECT * FROM respuestas_usuario WHERE usuario_id = '" + req.params.id + "'  ")];
-            case 2:
-                db_response = _a.sent();
-                console.log(db_response);
-                res.json(db_response.rows);
-                return [3 /*break*/, 4];
-            case 3:
-                err_12 = _a.sent();
-                console.error(err_12);
-                res.status(500).send('Internal Server Error');
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
-        }
-    });
-}); });
 app.post('/substractPoints', jsonParser, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var checkQuery2, checkResult2, db_data, query, db_response, err_13;
+    var checkQuery2, checkResult2, puntos_actualizados, updateQuery, dbResponse, updatedUser, today, fecha, query_usario, db_res, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                console.log("Petici\u00F3n recibida al endpoint POST /addscore. \n        Body:" + JSON.stringify(req.body));
+                console.log("Petici\u00F3n recibida al endpoint POST /substractPoints. \n      Body:" + JSON.stringify(req.body));
                 _a.label = 1;
             case 1:
-                _a.trys.push([1, 6, , 7]);
+                _a.trys.push([1, 7, , 8]);
                 checkQuery2 = "SELECT * FROM respuestas_usuario WHERE usuario_id  = '" + req.body.id + "' ;";
                 return [4 /*yield*/, db.query(checkQuery2)];
             case 2:
                 checkResult2 = _a.sent();
-                return [4 /*yield*/, db.query("SELECT * FROM respuestas_usuario WHERE usuario_id = '" + req.body.id + "'")];
+                if (checkResult2.rows.length === 0) {
+                    console.log('\x1b[33m%s\x1b[0m', 'Usuario no encontrado');
+                    return [2 /*return*/, res.status(404).json({ message: 'Usuario no encontrado' })];
+                }
+                console.log(checkResult2);
+                puntos_actualizados = checkResult2.rows[0].puntos - Number(10);
+                updateQuery = "UPDATE respuestas_usuario SET puntos = " + puntos_actualizados + " WHERE usuario_id = '" + req.body.id + "' RETURNING *;";
+                return [4 /*yield*/, db.query(updateQuery)];
             case 3:
-                db_data = _a.sent();
-                console.log(db_data);
-                if (!(db_data.rows.length > 0 && checkResult2.rows.length > 0)) return [3 /*break*/, 5];
-                query = "UPDATE respuestas_usuario SET puntos = 0 WHERE usuario_id = '" + req.body.id + "';";
-                console.log(query);
-                return [4 /*yield*/, db.query(query)];
+                dbResponse = _a.sent();
+                if (!(dbResponse.rows.length > 0)) return [3 /*break*/, 5];
+                updatedUser = dbResponse.rows[0];
+                today = new Date();
+                fecha = today.toLocaleDateString();
+                query_usario = "INSERT INTO poder_eliminar (usuario_destino,usuario_origen,fecha,puntos_restados) VALUES ('" + req.body.id_origen + "','" + req.body.id + "','" + fecha + "',10);";
+                console.log(query_usario);
+                return [4 /*yield*/, db.query(query_usario)];
             case 4:
-                db_response = _a.sent();
-                res.json("el usuario " + req.body.id + " se le ha actualizado la puntuacion");
-                console.log(db_response.rows);
-                _a.label = 5;
-            case 5:
-                console.log('\x1b[33m%s\x1b[0m', 'usuario no encontrado');
-                return [3 /*break*/, 7];
-            case 6:
-                err_13 = _a.sent();
-                console.error(err_13);
-                res.status(500).send('Internal Server Error');
-                return [3 /*break*/, 7];
-            case 7: return [2 /*return*/];
+                db_res = _a.sent();
+                // Enviar los datos actualizados en la respuesta
+                return [2 /*return*/, res.json({
+                        message: "Se ha eliminado la puntuaci\u00F3n del usuario " + req.body.id,
+                        updatedUser: updatedUser // Aquí devolvemos los datos actualizados
+                    })];
+            case 5: 
+            // Si no se pudo actualizar por alguna razón
+            return [2 /*return*/, res.status(400).json({ message: 'No se pudo actualizar la puntuación' })];
+            case 6: return [3 /*break*/, 8];
+            case 7:
+                error_1 = _a.sent();
+                console.error('Error al procesar la petición:', error_1);
+                return [2 /*return*/, res.status(500).json({ message: 'Error en el servidor' })];
+            case 8: return [2 /*return*/];
         }
     });
 }); });
