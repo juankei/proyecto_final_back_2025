@@ -464,5 +464,5 @@ app.post('/substractPoints', jsonParser, function (req, res) { return __awaiter(
 }); });
 var port = process.env.PORT || 3000;
 app.listen(port, function () {
-    return console.log("App listening on PORT " + port + ".\n\n    ENDPOINT:\n     - GET  /pregunta\n     - GET  /pregunta1\n     - GET  /user/:email\n     - POST /adduser\n     - POST /addusername\n     - GET  /showusername\n    ");
+    return console.log("App listening on PORT " + port + ".\n\n    ENDPOINT:\n     - GET  /pregunta\n     - GET  /pregunta1\n     - GET  /user/:email\n     - POST /adduser\n     - POST /addusername\n     - GET  /showusername/:email\n     - POST /addScore\n     - GET  /score\n     - GET  /answers/:id_ans\n     - GET  /allUsers\n     - POST /substractPoints\n     \n    ");
 });

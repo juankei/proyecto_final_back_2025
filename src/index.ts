@@ -333,5 +333,11 @@ app.listen(port, () =>
      - GET  /user/:email
      - POST /adduser
      - POST /addusername
-     - GET  /showusername
+     - GET  /showusername/:email
+     - POST /addScore
+     - GET  /score
+     - GET  /answers/:id_ans
+     - GET  /allUsers
+     - POST /substractPoints
+     
     `));
