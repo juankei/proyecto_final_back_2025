@@ -187,16 +187,16 @@ app.post('/addScore', jsonParser, async (req, res) => {
 
 
         
-        let checkQuery2 = `SELECT * FROM respuestas_usuario WHERE usuario_id  = '${req.body.id}' ;`;
+        let checkQuery2 = `SELECT * FROM usuarios WHERE id  = '${req.body.id}' ;`;
         let checkResult2 = await db.query(checkQuery2);
         
 
-        let db_data = await db.query(`SELECT * FROM respuestas_usuario WHERE usuario_id = '${req.body.id}'` );
+        let db_data = await db.query(`SELECT * FROM usuarios WHERE id = '${req.body.id}'` );
         console.log(db_data)
         //console.log (db_response)
         if (db_data.rows.length > 0  && checkResult2.rows.length > 0  ){
                    
-            let query = `UPDATE respuestas_usuario SET puntos = ${req.body.score} WHERE usuario_id = '${req.body.id}';`
+            let query = `UPDATE usuarios SET puntos = ${req.body.score} WHERE id = '${req.body.id}';`
             console.log(query);
             let db_response = await db.query(query);
             
@@ -207,7 +207,7 @@ app.post('/addScore', jsonParser, async (req, res) => {
         console.log(db_response.rows);
 
 
-        } else { let query_respuestas = `INSERT INTO respuestas_usuario (usuario_id,puntos) VALUES ('${req.body.id}', ${req.body.score});`
+        } else { let query_respuestas = `INSERT INTO usuarios (id,puntos) VALUES ('${req.body.id}', ${req.body.score});`
         console.log(query_respuestas);
         let db_res = await db.query(query_respuestas);
         
@@ -231,7 +231,7 @@ app.post('/addScore', jsonParser, async (req, res) => {
 app.get('/score/', async (req, res) => {
     console.log('Petición recibida al endpoint GET /score');
     try {
-        let db_response = await db.query(`SELECT * FROM respuestas_usuario ` );
+        let db_response = await db.query(`SELECT * FROM usuarios ` );
         console.log(req.params.user)
         console.log(db_response);
         res.json(db_response.rows);
@@ -259,7 +259,7 @@ app.get('/answers/:id_ans', async (req, res) => {
 app.get('/allUsers', async (req, res) => {
     console.log('Petición recibida al endpoint GET /answers');
     try {
-        let db_response = await db.query(`SELECT * FROM respuestas_usuario`);
+        let db_response = await db.query(`SELECT * FROM usuarios`);
         console.log(db_response);
         res.json(db_response.rows);
     } catch (err){
@@ -278,7 +278,7 @@ app.post('/substractPoints', jsonParser, async (req, res) => {
     
     try {
       // Verificar si el usuario existe
-      let checkQuery2 = `SELECT * FROM respuestas_usuario WHERE usuario_id  = '${req.body.id}' ;`;
+      let checkQuery2 = `SELECT * FROM usuarios WHERE id = '${req.body.id}' ;`;
       let checkResult2 = await db.query(checkQuery2);
       
       if (checkResult2.rows.length === 0) {
@@ -289,7 +289,7 @@ app.post('/substractPoints', jsonParser, async (req, res) => {
        let puntos_actualizados = checkResult2.rows[0].puntos - Number(10)
 
       // Actualizar los puntos a 0 y obtener los datos con RETURNING
-      let updateQuery = `UPDATE respuestas_usuario SET puntos = ${puntos_actualizados} WHERE usuario_id = '${req.body.id}' RETURNING *;`;
+      let updateQuery = `UPDATE usuarios SET puntos = ${puntos_actualizados} WHERE id = '${req.body.id}' RETURNING *;`;
       let dbResponse = await db.query(updateQuery);
       
       // Verificar si la consulta de actualización fue exitosa
