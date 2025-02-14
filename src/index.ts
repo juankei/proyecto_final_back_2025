@@ -106,6 +106,7 @@ app.get('/user/:email', async (req, res) => {
 
         if (db_response.rows.lenght > 0){
             res.json(db_response.rows[0]);
+            console.log ('usuario encontrado')
         } else {
             console.log ('usuario no encontrado')
             res.json('user not found')
@@ -319,6 +320,18 @@ app.post('/substractPoints', jsonParser, async (req, res) => {
       return res.status(500).json({ message: 'Error en el servidor' });
     }
   });
+
+  app.get('/showPower/:email', async (req, res) => {
+    console.log('Petición recibida al endpoint GET /showPower/:email');
+    try {
+        let db_response = await db.query(`SELECT * FROM poder_eliminar WHERE id = '${req.params.email}';` );
+        console.log(db_response);
+        res.json(db_response.rows);
+    } catch (err){
+        console.error(err);
+        res.status(500).send('Internal Server Error'); 
+    }
+});
 
 
 

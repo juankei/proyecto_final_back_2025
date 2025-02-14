@@ -197,6 +197,7 @@ app.get('/user/:email', function (req, res) { return __awaiter(void 0, void 0, v
                 db_response = _a.sent();
                 if (db_response.rows.lenght > 0) {
                     res.json(db_response.rows[0]);
+                    console.log('usuario encontrado');
                 }
                 else {
                     console.log('usuario no encontrado');
@@ -303,16 +304,16 @@ app.post('/addScore', jsonParser, function (req, res) { return __awaiter(void 0,
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 8, , 9]);
-                checkQuery2 = "SELECT * FROM respuestas_usuario WHERE usuario_id  = '" + req.body.id + "' ;";
+                checkQuery2 = "SELECT * FROM usuarios WHERE id  = '" + req.body.id + "' ;";
                 return [4 /*yield*/, db.query(checkQuery2)];
             case 2:
                 checkResult2 = _a.sent();
-                return [4 /*yield*/, db.query("SELECT * FROM respuestas_usuario WHERE usuario_id = '" + req.body.id + "'")];
+                return [4 /*yield*/, db.query("SELECT * FROM usuarios WHERE id = '" + req.body.id + "'")];
             case 3:
                 db_data = _a.sent();
                 console.log(db_data);
                 if (!(db_data.rows.length > 0 && checkResult2.rows.length > 0)) return [3 /*break*/, 5];
-                query = "UPDATE respuestas_usuario SET puntos = " + req.body.score + " WHERE usuario_id = '" + req.body.id + "';";
+                query = "UPDATE usuarios SET puntos = " + req.body.score + " WHERE id = '" + req.body.id + "';";
                 console.log(query);
                 return [4 /*yield*/, db.query(query)];
             case 4:
@@ -321,7 +322,7 @@ app.post('/addScore', jsonParser, function (req, res) { return __awaiter(void 0,
                 console.log(db_response.rows);
                 return [3 /*break*/, 7];
             case 5:
-                query_respuestas = "INSERT INTO respuestas_usuario (usuario_id,puntos) VALUES ('" + req.body.id + "', " + req.body.score + ");";
+                query_respuestas = "INSERT INTO usuarios (id,puntos) VALUES ('" + req.body.id + "', " + req.body.score + ");";
                 console.log(query_respuestas);
                 return [4 /*yield*/, db.query(query_respuestas)];
             case 6:
@@ -349,7 +350,7 @@ app.get('/score/', function (req, res) { return __awaiter(void 0, void 0, void 0
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, db.query("SELECT * FROM respuestas_usuario ")];
+                return [4 /*yield*/, db.query("SELECT * FROM usuarios ")];
             case 2:
                 db_response = _a.sent();
                 console.log(req.params.user);
@@ -398,7 +399,7 @@ app.get('/allUsers', function (req, res) { return __awaiter(void 0, void 0, void
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, db.query("SELECT * FROM respuestas_usuario")];
+                return [4 /*yield*/, db.query("SELECT * FROM usuarios")];
             case 2:
                 db_response = _a.sent();
                 console.log(db_response);
@@ -422,7 +423,7 @@ app.post('/substractPoints', jsonParser, function (req, res) { return __awaiter(
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 7, , 8]);
-                checkQuery2 = "SELECT * FROM respuestas_usuario WHERE usuario_id  = '" + req.body.id + "' ;";
+                checkQuery2 = "SELECT * FROM usuarios WHERE id = '" + req.body.id + "' ;";
                 return [4 /*yield*/, db.query(checkQuery2)];
             case 2:
                 checkResult2 = _a.sent();
@@ -432,7 +433,7 @@ app.post('/substractPoints', jsonParser, function (req, res) { return __awaiter(
                 }
                 console.log(checkResult2);
                 puntos_actualizados = checkResult2.rows[0].puntos - Number(10);
-                updateQuery = "UPDATE respuestas_usuario SET puntos = " + puntos_actualizados + " WHERE usuario_id = '" + req.body.id + "' RETURNING *;";
+                updateQuery = "UPDATE usuarios SET puntos = " + puntos_actualizados + " WHERE id = '" + req.body.id + "' RETURNING *;";
                 return [4 /*yield*/, db.query(updateQuery)];
             case 3:
                 dbResponse = _a.sent();
@@ -459,6 +460,30 @@ app.post('/substractPoints', jsonParser, function (req, res) { return __awaiter(
                 console.error('Error al procesar la petición:', error_1);
                 return [2 /*return*/, res.status(500).json({ message: 'Error en el servidor' })];
             case 8: return [2 /*return*/];
+        }
+    });
+}); });
+app.get('/showPower/:email', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var db_response, err_12;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                console.log('Petición recibida al endpoint GET /showPower/:email');
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, db.query("SELECT * FROM poder_eliminar WHERE id = '" + req.params.email + "';")];
+            case 2:
+                db_response = _a.sent();
+                console.log(db_response);
+                res.json(db_response.rows);
+                return [3 /*break*/, 4];
+            case 3:
+                err_12 = _a.sent();
+                console.error(err_12);
+                res.status(500).send('Internal Server Error');
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
         }
     });
 }); });
