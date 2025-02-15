@@ -472,7 +472,7 @@ app.get('/showPower/:email', function (req, res) { return __awaiter(void 0, void
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, db.query("SELECT * FROM poder_eliminar WHERE id = '" + req.params.email + "';")];
+                return [4 /*yield*/, db.query("SELECT * FROM poder_eliminar WHERE usuario_origen = '" + req.params.email + "';")];
             case 2:
                 db_response = _a.sent();
                 console.log(db_response);
@@ -481,6 +481,32 @@ app.get('/showPower/:email', function (req, res) { return __awaiter(void 0, void
             case 3:
                 err_12 = _a.sent();
                 console.error(err_12);
+                res.status(500).send('Internal Server Error');
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+app.post('/delete_substract', jsonParser, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var query, db_response, err_13;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                console.log("Petici\u00F3n recibida al endpoint POST /delete_substract. \n        Body:" + JSON.stringify(req.body));
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                query = " DELETE FROM poder_eliminar WHERE usuario_destino = '" + req.body.usuario_destino + "';";
+                console.log(query);
+                return [4 /*yield*/, db.query(query)];
+            case 2:
+                db_response = _a.sent();
+                console.log(db_response.rows);
+                res.json("Registro guardado correctamente.");
+                return [3 /*break*/, 4];
+            case 3:
+                err_13 = _a.sent();
+                console.error(err_13);
                 res.status(500).send('Internal Server Error');
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];

@@ -324,12 +324,29 @@ app.post('/substractPoints', jsonParser, async (req, res) => {
   app.get('/showPower/:email', async (req, res) => {
     console.log('Petición recibida al endpoint GET /showPower/:email');
     try {
-        let db_response = await db.query(`SELECT * FROM poder_eliminar WHERE id = '${req.params.email}';` );
+        let db_response = await db.query(`SELECT * FROM poder_eliminar WHERE usuario_origen = '${req.params.email}';` );
         console.log(db_response);
         res.json(db_response.rows);
     } catch (err){
         console.error(err);
         res.status(500).send('Internal Server Error'); 
+    }
+});
+
+
+app.post('/delete_substract', jsonParser, async (req, res) => {
+    console.log(`Petición recibida al endpoint POST /delete_substract. 
+        Body:${JSON.stringify(req.body)}`);
+    try {
+
+        let query = ` DELETE FROM poder_eliminar WHERE usuario_destino = '${req.body.usuario_destino}';`
+        console.log(query);
+        let db_response = await db.query(query);
+        console.log(db_response.rows);
+        res.json("Registro guardado correctamente.");
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Internal Server Error');
     }
 });
 
