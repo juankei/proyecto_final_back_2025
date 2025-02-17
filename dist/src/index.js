@@ -229,6 +229,9 @@ app.post('/adduser', jsonParser, function (req, res) { return __awaiter(void 0, 
                 if (checkResult.rows.length > 0) {
                     console.log("el usuario ya existe");
                 }
+                if (req.body.id = 'undefined') {
+                    console.log('no señor');
+                }
                 query = "INSERT INTO usuarios (id,nombre_usuario) VALUES ('" + req.body.id + "','" + req.body.nombre_usuario + "');";
                 console.log(query);
                 return [4 /*yield*/, db.query(query)];
@@ -350,7 +353,7 @@ app.get('/score/', function (req, res) { return __awaiter(void 0, void 0, void 0
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, db.query("SELECT * FROM usuarios ")];
+                return [4 /*yield*/, db.query("SELECT * FROM usuarios ORDER BY puntos DESC ")];
             case 2:
                 db_response = _a.sent();
                 console.log(req.params.user);
@@ -433,6 +436,9 @@ app.post('/substractPoints', jsonParser, function (req, res) { return __awaiter(
                 }
                 console.log(checkResult2);
                 puntos_actualizados = checkResult2.rows[0].puntos - Number(10);
+                if (puntos_actualizados < 0) {
+                    puntos_actualizados = 0;
+                }
                 updateQuery = "UPDATE usuarios SET puntos = " + puntos_actualizados + " WHERE id = '" + req.body.id + "' RETURNING *;";
                 return [4 /*yield*/, db.query(updateQuery)];
             case 3:

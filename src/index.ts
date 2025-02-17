@@ -135,6 +135,10 @@ app.post('/adduser', jsonParser, async (req, res) => {
         if (checkResult.rows.length > 0) {
          console.log(`el usuario ya existe`)
         }
+        
+        if (req.body.id = 'undefined'){
+            console.log ('no señor')
+        }
 
         let query = `INSERT INTO usuarios (id,nombre_usuario) VALUES ('${req.body.id}','${req.body.nombre_usuario}');`
         console.log(query);
@@ -232,7 +236,7 @@ app.post('/addScore', jsonParser, async (req, res) => {
 app.get('/score/', async (req, res) => {
     console.log('Petición recibida al endpoint GET /score');
     try {
-        let db_response = await db.query(`SELECT * FROM usuarios ` );
+        let db_response = await db.query(`SELECT * FROM usuarios ORDER BY puntos DESC ` );
         console.log(req.params.user)
         console.log(db_response);
         res.json(db_response.rows);
@@ -288,7 +292,9 @@ app.post('/substractPoints', jsonParser, async (req, res) => {
       }
       console.log(checkResult2)
        let puntos_actualizados = checkResult2.rows[0].puntos - Number(10)
-
+      if (puntos_actualizados < 0 ){
+        puntos_actualizados = 0
+      }
       // Actualizar los puntos a 0 y obtener los datos con RETURNING
       let updateQuery = `UPDATE usuarios SET puntos = ${puntos_actualizados} WHERE id = '${req.body.id}' RETURNING *;`;
       let dbResponse = await db.query(updateQuery);
