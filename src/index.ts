@@ -135,15 +135,11 @@ app.post('/adduser', jsonParser, async (req, res) => {
         if (checkResult.rows.length > 0) {
          console.log(`el usuario ya existe`)
         }
-        
-        if (req.body.id = 'undefined'){
-            console.log ('no señor')
-        }
 
         let query = `INSERT INTO usuarios (id,nombre_usuario) VALUES ('${req.body.id}','${req.body.nombre_usuario}');`
         console.log(query);
         let db_response = await db.query(query);
-
+        console.log('usuario creado')
         
    
         res.json("Registro guardado correctamente.");
@@ -375,5 +371,7 @@ app.listen(port, () =>
      - GET  /answers/:id_ans
      - GET  /allUsers
      - POST /substractPoints
+     - GET  /showPower/:email
+     - POST /delete_substract
      
     `));

@@ -229,14 +229,12 @@ app.post('/adduser', jsonParser, function (req, res) { return __awaiter(void 0, 
                 if (checkResult.rows.length > 0) {
                     console.log("el usuario ya existe");
                 }
-                if (req.body.id = 'undefined') {
-                    console.log('no señor');
-                }
                 query = "INSERT INTO usuarios (id,nombre_usuario) VALUES ('" + req.body.id + "','" + req.body.nombre_usuario + "');";
                 console.log(query);
                 return [4 /*yield*/, db.query(query)];
             case 3:
                 db_response = _a.sent();
+                console.log('usuario creado');
                 res.json("Registro guardado correctamente.");
                 return [3 /*break*/, 5];
             case 4:
@@ -521,5 +519,5 @@ app.post('/delete_substract', jsonParser, function (req, res) { return __awaiter
 }); });
 var port = process.env.PORT || 3000;
 app.listen(port, function () {
-    return console.log("App listening on PORT " + port + ".\n\n    ENDPOINT:\n     - GET  /pregunta\n     - GET  /pregunta1\n     - GET  /user/:email\n     - POST /adduser\n     - POST /addusername\n     - GET  /showusername/:email\n     - POST /addScore\n     - GET  /score\n     - GET  /answers/:id_ans\n     - GET  /allUsers\n     - POST /substractPoints\n     \n    ");
+    return console.log("App listening on PORT " + port + ".\n\n    ENDPOINT:\n     - GET  /pregunta\n     - GET  /pregunta1\n     - GET  /user/:email\n     - POST /adduser\n     - POST /addusername\n     - GET  /showusername/:email\n     - POST /addScore\n     - GET  /score\n     - GET  /answers/:id_ans\n     - GET  /allUsers\n     - POST /substractPoints\n     - GET  /showPower/:email\n     - POST /delete_substract\n     \n    ");
 });
